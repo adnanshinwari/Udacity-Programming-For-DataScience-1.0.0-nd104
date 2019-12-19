@@ -219,3 +219,27 @@ SELECT *
 FROM web_events
 WHERE channel IN ('organic', 'adwords') AND occurred_at BETWEEN '2016-01-01' AND '2016-12-31'
 ORDER BY occurred_at DESC;
+
+/* OR */
+SELECT account_id, occurred_at, standard_qty, gloss_qty, poster_qty
+FROM orders
+WHERE standard_qty = 0 OR gloss_qty = 0 OR poster_qty = 0;
+
+SELECT account_id, occurred_at, standard_qty, gloss_qty, poster_qty
+FROM orders
+WHERE (standard_qty = 0 OR gloss_qty = 0 OR poster_qty = 0) AND occurred_at >= '2016-10-01';
+
+/* QUIZ: OR */
+SELECT id 
+FROM orders
+WHERE gloss_qty > 4000 OR poster_qty > 4000;
+
+SELECT *
+FROM orders
+WHERE standard_qty = 0 AND (gloss_qty > 1000 OR poster_qty > 1000);
+
+SELECT *
+FROM accounts
+WHERE name LIKE '%C' OR name LIKE 'W%'
+	AND (primary_poc LIKE '%ana%' OR primary_poc LIKE '%Ana%')
+	AND primary_poc NOT LIKE '%eana%';
