@@ -246,23 +246,87 @@ GROUP BY 1
 HAVING SUM(total_amt_usd) >= 250000;
 
 /* QUIZ: Having */
-SELECT s.id AS "Sales Person ID", s.name AS "Sales Person Name", COUNT(a.*) AS "Count Account"
+SELECT s.id AS "SalesMan ID", s.name AS "SalesMan NAME", COUNT(a.id) AS "Accounts"
 FROM sales_reps s
 JOIN accounts a ON s.id = a.sales_rep_id
 GROUP BY s.id, s.name
-HAVING COUNT(a.*) > 5
-ORDER BY "Count Account" DESC;
+HAVING COUNT(a.id) > 5
+ORDER BY "Accounts" DESC;
 
-SELECT a.id AS "Account ID", a.name AS "Account Name", COUNT(o.*) AS "ORDERS"
+SELECT a.id AS account_id, a.name AS account_name, COUNT(o.*) AS orders
 FROM accounts a
 JOIN orders o ON a.id = o.account_id
 GROUP BY a.id, a.name
 HAVING COUNT(o.*) > 20
-ORDER BY "ORDERS" DESC;
+ORDER BY orders DESC;
 
-SELECT a.id AS account_id, a.name AS account_name, COUNT(o.*) AS max_count
+SELECT a.id AS account_id, a.name AS account_name, COUNT(o.*) AS orders
 FROM accounts a
 JOIN orders o ON a.id = o.account_id
 GROUP BY a.id, a.name
-ORDER BY max_count DESC
+ORDER BY orders DESC
 LIMIT 1;
+
+SELECT a.id, a.name, SUM(o.total_amt_usd) total_spent
+FROM accounts a
+JOIN orders o ON a.id = o.account_id
+GROUP BY a.id, a.name
+HAVING SUM(o.total_amt_usd) > 30000
+ORDER BY total_spent DESC;
+
+SELECT a.id AS account_id, a.name AS account_name, SUM(o.total_amt_usd) AS total_spent
+FROM accounts a
+JOIN orders o ON a.id = o.account_id
+GROUP BY a.id, a.name
+HAVING SUM(o.total_amt_usd) < 1000
+ORDER BY total_spent DESC;
+
+SELECT a.id AS account_id, a.name AS account_name, SUM(o.total_amt_usd) AS total_spent
+FROM accounts a
+JOIN orders o ON a.id = o.account_id
+GROUP BY a.id, a.name
+ORDER BY total_spent DESC
+LIMIT 1;
+
+SELECT a.id AS account_id, a.name AS account_name, SUM(o.total_amt_usd) AS total_spent
+FROM accounts a
+JOIN orders o ON a.id = o.account_id
+GROUP BY a.id, a.name
+ORDER BY total_spent
+LIMIT 1;
+
+SELECT a.id AS account_id, a.name AS account_name, w.channel, COUNT(w.channel) AS fb_channel
+FROM accounts a
+JOIN web_events w ON a.id = w.account_id
+WHERE w.channel IN ('facebook')
+GROUP BY a.id, a.name, w.channel
+HAVING COUNT(w.channel) > 6
+ORDER BY fb_channel DESC;
+
+SELECT a.id AS account_id, a.name AS account_name, w.channel, COUNT(w.channel) AS fb_channel
+FROM accounts a
+JOIN web_events w ON a.id = w.account_id
+WHERE w.channel IN ('facebook')
+GROUP BY a.id, a.name, w.channel
+ORDER BY fb_channel DESC
+LIMIT 1;
+
+SELECT a.id AS account_id, a.name AS account_name, w.channel AS channel, COUNT(w.*) AS fb_channel
+FROM accounts a
+JOIN web_events w ON a.id = w.account_id
+GROUP BY a.id, a.name, w.channel
+ORDER BY fb_channel DESC
+LIMIT 10;
+
+/* DATE */
+SELECT DATE_TRUNC('day', occurred_at) AS day, SUM(standard_qty) AS standard_qty
+FROM orders
+GROUP BY DATE_TRUNC('day', occurred_at)
+ORDER BY DATE_TRUNC('day', occurred_at);
+
+SELECT DATE_PART('dow', occurred_at) AS day_of_week, SUM(total) AS total_qty
+FROM orders 
+GROUP BY 1
+ORDER BY 2 DESC;
+
+/* QUIZ: DATE */
