@@ -353,3 +353,19 @@ WHERE a.name = 'Walmart'
 GROUP BY 1
 ORDER BY 2 DESC
 LIMIT 1;
+
+/* CASE */
+SELECT id, account_id, occurred_at, channel,
+		CASE WHEN channel = 'facebook' THEN 'yes' END AS is_facebook
+FROM web_events
+ORDER BY occurred_at;
+
+SELECT id, account_id, occurred_at, channel,
+		CASE WHEN channel = 'facebook' THEN 'yes' ELSE 'no' END AS is_facebook
+FROM web_events
+ORDER BY occurred_at;
+
+SELECT id, account_id, occurred_at, channel,
+		CASE WHEN channel = 'facebook' OR channel = 'direct' THEN 'yes' ELSE 'no' END AS is_facebook
+FROM web_events
+ORDER BY occurred_at;
