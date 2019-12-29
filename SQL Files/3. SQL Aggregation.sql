@@ -303,13 +303,7 @@ GROUP BY a.id, a.name, w.channel
 HAVING COUNT(w.channel) > 6
 ORDER BY fb_channel DESC;
 
-SELECT a.id AS account_id, a.name AS account_name, w.channel, COUNT(w.channel) AS fb_channel
-FROM accounts a
-JOIN web_events w ON a.id = w.account_id
-WHERE w.channel IN ('facebook')
-GROUP BY a.id, a.name, w.channel
-ORDER BY fb_channel DESC
-LIMIT 1;
+ 
 
 SELECT a.id AS account_id, a.name AS account_name, w.channel AS channel, COUNT(w.*) AS fb_channel
 FROM accounts a
@@ -330,3 +324,32 @@ GROUP BY 1
 ORDER BY 2 DESC;
 
 /* QUIZ: DATE */
+SELECT DATE_PART('year', occurred_at) AS ord_year, SUM(total_amt_usd) AS total_spent
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT DATE_PART('month', occurred_at) AS month, SUM(total_amt_usd) AS total_spent
+FROM orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT DATE_PART('year', occurred_at) AS year, SUM(total) AS total_orders
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT DATE_PART('month', occurred_at) AS month, SUM(total) AS total_orders
+FROM orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT DATE_TRUNC('month', o.occurred_at) AS date, SUM(o.gloss_amt_usd) AS total_spent
+FROM orders o
+JOIN accounts a ON a.id = o.account_id
+WHERE a.name = 'Walmart'
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1;
