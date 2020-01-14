@@ -369,3 +369,92 @@ SELECT id, account_id, occurred_at, channel,
 		CASE WHEN channel = 'facebook' OR channel = 'direct' THEN 'yes' ELSE 'no' END AS is_facebook
 FROM web_events
 ORDER BY occurred_at;
+
+SELECT account_id, occurred_at, total,
+		CASE WHEN total > 500 THEN 'Over 500'
+			WHEN total > 300 THEN '301-500'
+			WHEN total > 100 THEN '101-300'
+			ELSE '100 or under' END AS total_group
+FROM orders;
+
+SELECT account_id, occurred_at, total,
+		CASE WHEN total > 500 THEN 'Over 500'
+			WHEN total > 300 AND total <= 500 THEN '301-500'
+			WHEN total > 100 AND total <= 300 THEN '101-300'
+			ELSE '100 or under' END AS total_group
+FROM orders;
+
+/* CASE: Example */
+SELECT id, account_id, standard_amt_usd/standard_qty AS unit_price
+FROM orders
+LIMIT 10;
+
+SELECT account_id,
+		CASE WHEN standard_qty = 0 OR standard_qty IS NULL THEN 0
+			ELSE standard_amt_usd/standard_qty END AS unit_price
+FROM orders
+LIMIT 10;
+
+/* CASE II */
+SELECT CASE WHEN total > 500 THEN 'Over 500'
+			ELSE '500 or under' END AS total_group,
+			COUNT(*) AS order_count
+FROM orders
+GROUP BY 1;
+
+/* QUIZ: CASE */
+SELECT account_id, total,
+   CASE WHEN total > 3000 THEN 'Large'
+   ELSE 'Small' END AS order_level
+FROM orders
+ORDER BY 2 DESC;
+
+SELECT CASE WHEN total >= 2000 THEN 'At least 2000'
+			WHEN total >= 1000 AND total < 2000 THEN 'BETWEEN 1000 and 2000'
+			ELSE 'Less than 1000' END AS order_category,
+			COUNT(*) AS order_count
+FROM orders
+GROUP BY 1;
+
+SELECT a.name, SUM(total_amt_usd) total_spent, 
+        CASE WHEN SUM(total_amt_usd) > 200000 THEN 'top'
+        WHEN  SUM(total_amt_usd) > 100000 THEN 'middle'
+        ELSE 'low' END AS customer_level
+FROM orders o
+JOIN accounts a
+ON o.account_id = a.id 
+GROUP BY a.name
+ORDER BY 2 DESC;
+
+SELECT a.name, SUM(total_amt_usd) total_spent, 
+        CASE WHEN SUM(total_amt_usd) > 200000 THEN 'top'
+        WHEN  SUM(total_amt_usd) > 100000 THEN 'middle'
+        ELSE 'low' END AS customer_level
+FROM orders o
+JOIN accounts a
+ON o.account_id = a.id
+WHERE occurred_at > '2015-12-31' 
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT s.name, COUNT(o.*) AS order_count,
+		CASE WHEN COUNT(o.*) >= 200 THEN 'top'
+		ELSE 'Not' END AS top_performing
+FROM sales_reps s
+JOIN accounts a ON s.id = a.sales_rep_id
+JOIN orders o ON a.id = o.account_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+
+SELECT s.name, COUNT(*), SUM(o.total_amt_usd) total_spent, 
+        CASE WHEN COUNT(*) > 200 OR SUM(o.total_amt_usd) > 750000 THEN 'top'
+        WHEN COUNT(*) > 150 OR SUM(o.total_amt_usd) > 500000 THEN 'middle'
+        ELSE 'low' END AS sales_rep_level
+FROM orders o
+JOIN accounts a
+ON o.account_id = a.id 
+JOIN sales_reps s
+ON s.id = a.sales_rep_id
+GROUP BY s.name
+ORDER BY 3 DESC;
