@@ -54,7 +54,7 @@ SELECT SUM(total_amt_usd) AS amount_spent
 FROM orders
 WHERE DATE_TRUNC('month', occurred_at) = (SELECT DATE_TRUNC('month', MIN(occurred_at)) AS min_month
 											FROM orders);
-											
+
 /* SUBQUERY Mania */
 SELECT t3.id, t3.name, t3.channel, t3.ct
 FROM (SELECT a.id, a.name, we.channel, COUNT(*) ct
