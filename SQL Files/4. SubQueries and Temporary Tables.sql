@@ -71,3 +71,18 @@ JOIN (SELECT t1.id, t1.name, MAX(ct) max_chan
 		GROUP BY t1.id, t1.name) t2
 ON t2.id = t3.id AND t2.max_chan = t3.ct
 ORDER BY t3.id, t3.ct;
+
+/*SUBQUERY Mania QUIZ*/
+SELECT T2.sale_person_name, T2.region_name, T1.total_amount
+FROM (SELECT a.sales_rep_id, a.id, SUM(o.total_amt_usd) AS total_amount
+		FROM accounts a
+		JOIN orders o
+		ON a.id = o.account_id
+		GROUP BY a.sales_rep_id, a.id) T1
+JOIN (SELECT s.id, s.name AS sale_person_name, r.name AS region_name
+		FROM sales_reps s
+		JOIN region r
+		ON r.id = s.region_id) T2
+ON T2.id = T1.sales_rep_id
+ORDER BY 3 DESC
+LIMIT 5;
