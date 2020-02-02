@@ -84,16 +84,66 @@ ORDER BY t3.id, t3.ct;
 
 /*SUBQUERY Mania QUIZ*/
 /* 1. Provide the name of the sales_rep in each region with the largest amount of total_amt_usd sales. */
-SELECT T2.sale_person_name, T2.region_name, T1.total_amount
-FROM (SELECT a.sales_rep_id, a.id, SUM(o.total_amt_usd) AS total_amount
-		FROM accounts a
-		JOIN orders o
-		ON a.id = o.account_id
-		GROUP BY a.sales_rep_id, a.id) T1
-JOIN (SELECT s.id, s.name AS sale_person_name, r.name AS region_name
+
+/* Finding the total_amt_usd totals associated with each sales rep.	The region in which they were located. */
+SELECT s.name AS srep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+FROM sales_reps s
+JOIN region r
+ON r.id = s.region_id
+JOIN accounts a
+ON s.id = a.sales_rep_id
+JOIN orders o
+ON a.id = o.account_id
+GROUP BY srep_name, region_name
+ORDER BY 3 DESC;
+
+/* Max for Each region */
+SELECT region_name, MAX(total_amt) total_amt
+FROM (SELECT s.name AS srep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
 		FROM sales_reps s
 		JOIN region r
-		ON r.id = s.region_id) T2
-ON T2.id = T1.sales_rep_id
-ORDER BY 3 DESC
-LIMIT 5;
+		ON r.id = s.region_id
+		JOIN accounts a
+		ON s.id = a.sales_rep_id
+		JOIN orders o
+		ON a.id = o.account_id
+		GROUP BY srep_name, region_name) T1
+GROUP BY 1
+ORDER BY 2 DESC;
+
+/* Need SAME region_name and total_amt from both tables */
+SELECT t1.srep_name, t1.region_name, t1.total_amt
+FROM (SELECT s.name AS srep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+		FROM sales_reps s
+		JOIN region r
+		ON r.id = s.region_id
+		JOIN accounts a
+		ON s.id = a.sales_rep_id
+		JOIN orders o
+		ON a.id = o.account_id
+		GROUP BY srep_name, region_name) t1
+JOIN (SELECT region_name, MAX(total_amt) total_amt
+		FROM (SELECT s.name AS srep_name, r.name region_name, SUM(o.total_amt_usd) total_amt
+				FROM sales_reps s
+				JOIN region r
+				ON r.id = s.region_id
+				JOIN accounts a
+				ON s.id = a.sales_rep_id
+				JOIN orders o
+				ON a.id = o.account_id
+				GROUP BY srep_name, region_name) T2
+		GROUP BY 1) T3
+ON T3.region_name = T1.region_name AND T3.total_amt = T1.total_amt
+ORDER BY 3 DESC;
+
+/* 2. For the region with the largest (sum) of sales total_amt_usd, how many total (count) orders were placed? */
+
+/* 3. For the name of the account that purchased the most (in total over their lifetime as a customer)
+		standard_qty paper, how many accounts still had more in total purchases? */
+
+/* 4. For the customer that spent the most (in total over their lifetime as a customer)
+		total_amt_usd, how many web_events did they have for each channel? */
+
+/* 5. What is the lifetime average amount spent in terms of total_amt_usd for the top 10 total spending accounts? */
+
+/* What is the lifetime average amount spent in terms of total_amt_usd for only the companies that spent more than the average of all orders. */
