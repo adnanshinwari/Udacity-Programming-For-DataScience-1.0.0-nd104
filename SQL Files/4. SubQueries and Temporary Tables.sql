@@ -333,7 +333,9 @@ WITH table1 AS (SELECT r.name AS region_name, SUM(o.total_amt_usd) total_amt
 					JOIN sales_reps s ON r.id = s.region_id
 					JOIN accounts a ON s.id = a.sales_rep_id
 					JOIN orders o ON a.id = o.account_id
-					GROUP BY r.name)
+					GROUP BY r.name),
+	table2 AS (SELECT MAX(total_amt)
+				FROM table1)
 
 
 SELECT r.name, COUNT(total) total_orders
@@ -342,9 +344,7 @@ JOIN sales_reps s ON r.id = s.region_id
 JOIN accounts a ON s.id = a.sales_rep_id
 JOIN orders o ON a.id = o.account_id
 GROUP BY 1
-HAVING SUM(o.total_amt_usd) = (
-							SELECT MAX(total_amt)
-							FROM table1);
+HAVING SUM(o.total_amt_usd) = (SELECT * FROM table2);
 
 /* 3. For the name of the account that purchased the most (in total over their lifetime as a customer)
 		standard_qty paper, how many accounts still had more in total purchases? */
@@ -358,9 +358,8 @@ WITH table1 AS (SELECT a.name account_name, SUM(o.standard_qty) AS std_qty, SUM(
 				FROM accounts a
 				JOIN orders o ON a.id = o.account_id
 				GROUP BY 1
-				HAVING SUM(o.total) > (
-						SELECT total
-						FROM table1 ))
+				HAVING SUM(o.total) > (SELECT total
+										FROM table1 ))
 						
 SELECT COUNT(*)
 FROM table2;
