@@ -65,3 +65,17 @@ WITH t1 AS (SELECT name AS company_names, primary_poc AS full_names, LEFT(UPPER(
 					
 SELECT LOWER(CONCAT(first_name,'.',last_name,'@', REPLACE(company_names,' ',''),'.com')) AS emails
 FROM t1;
+
+/* 3. We would also like to create an initial password, which they will change after their first log in.
+		The first password will be the first letter of the primary_poc's first name (lowercase),
+		then the last letter of their first name (lowercase), the first letter of their last name (lowercase),
+		the last letter of their last name (lowercase), the number of letters in their first name,
+		the number of letters in their last name, and then the name of the company they are working with,
+		all capitalized with no spaces. */
+WITH T1 AS (SELECT REPLACE(LEFT(LOWER(primary_poc), POSITION(' ' IN primary_poc)), ' ','') AS first_name,
+		RIGHT(LOWER(primary_poc), LENGTH(primary_poc) - POSITION(' ' IN primary_poc)) AS last_name,
+		UPPER(REPLACE(name, ' ', '')) AS company_name
+FROM accounts)
+
+SELECT LEFT(first_name, 1) || RIGHT(first_name, 1) || LEFT(last_name, 1) || RIGHT(last_name, 1) ||
+		LENGTH(first_name) || LENGTH(last_name) || company_name AS Passwords FROM T1;
