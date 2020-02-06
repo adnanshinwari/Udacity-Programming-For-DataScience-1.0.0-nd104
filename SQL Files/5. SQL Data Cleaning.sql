@@ -46,3 +46,11 @@ FROM accounts;
 SELECT name AS full_names, LEFT(UPPER(name), POSITION(' ' IN name) - 1) AS first_name,
 		RIGHT(UPPER(name), LENGTH(name) - POSITION(' ' IN name)) AS last_name
 FROM sales_reps;
+
+/* QUIZ: CONCAT */
+WITH t1 AS (SELECT name AS company_names, primary_poc AS full_names, LEFT(UPPER(primary_poc), POSITION(' ' IN primary_poc) - 1) AS first_name,
+													RIGHT(UPPER(primary_poc), LENGTH(primary_poc) - POSITION(' ' IN primary_poc)) AS last_name
+					FROM accounts)
+					
+SELECT LOWER(first_name || '.' || last_name || '@' || company_names || '.com') AS emails
+FROM t1;
