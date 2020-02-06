@@ -48,9 +48,20 @@ SELECT name AS full_names, LEFT(UPPER(name), POSITION(' ' IN name) - 1) AS first
 FROM sales_reps;
 
 /* QUIZ: CONCAT */
+/* 1. Each company in the accounts table wants to create an email address for each primary_poc.
+		The email address should be the first name of the primary_poc . last name primary_poc @ company name .com. */
 WITH t1 AS (SELECT name AS company_names, primary_poc AS full_names, LEFT(UPPER(primary_poc), POSITION(' ' IN primary_poc) - 1) AS first_name,
 													RIGHT(UPPER(primary_poc), LENGTH(primary_poc) - POSITION(' ' IN primary_poc)) AS last_name
 					FROM accounts)
 					
 SELECT LOWER(first_name || '.' || last_name || '@' || company_names || '.com') AS emails
+FROM t1;
+
+/* 2. Each company in the accounts table wants to create an email address for each primary_poc.
+		The email address should be the first name of the primary_poc . last name primary_poc @ company name .com. */
+WITH t1 AS (SELECT name AS company_names, primary_poc AS full_names, LEFT(UPPER(primary_poc), POSITION(' ' IN primary_poc) - 1) AS first_name,
+													RIGHT(UPPER(primary_poc), LENGTH(primary_poc) - POSITION(' ' IN primary_poc)) AS last_name
+					FROM accounts)
+					
+SELECT LOWER(CONCAT(first_name,'.',last_name,'@', REPLACE(company_names,' ',''),'.com')) AS emails
 FROM t1;
